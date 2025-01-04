@@ -1,3 +1,3 @@
 import * as pgcr from "./queue/pgcr.queue";
 
-pgcr.start();
+pgcr.start(20);

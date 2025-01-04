@@ -1,3 +1,4 @@
+import throttledQueue from "throttled-queue";
 import env from "../utils/env";
 import {
   ActivityHistory,
@@ -6,6 +7,8 @@ import {
   PGCR,
   UserProfile,
 } from "./bungie-types";
+
+const throttle = throttledQueue(30, 10);
 
 export async function fetchBungie<T>(
   url: string,
@@ -22,7 +25,9 @@ export async function fetchBungie<T>(
     };
   }
 
-  const response = await fetch(`${baseUrl}${url}`, options);
+  const fetcher = () => fetch(`${baseUrl}${url}`, options);
+
+  const response = await (options?.throttled ? throttle(fetcher) : fetcher());
   if (!response.ok) {
     return {
       Success: false,
@@ -48,14 +53,15 @@ export async function getUserProfile(
     {
       includeApiKey: true,
       statsUrl: true,
+      throttled: true,
     }
   );
 }
 
 export async function getActivityHistory(
-  membershipType: number,
-  membershipId: number,
-  characterId: number,
+  membershipType: number | string,
+  membershipId: number | string,
+  characterId: number | string,
   page: number = 0,
   modes: string = "raid",
   count: number = 250
@@ -65,11 +71,12 @@ export async function getActivityHistory(
     {
       includeApiKey: true,
       statsUrl: true,
+      throttled: true,
     }
   );
 }
 
-export async function getPostGameCarnageReport(instanceId: number) {
+export async function getPostGameCarnageReport(instanceId: number | string) {
   return fetchBungie<PGCR>(
     `/Platform/Destiny2/Stats/PostGameCarnageReport/${instanceId}`,
     {

@@ -9,6 +9,7 @@ export interface PGCRv1 {
   timestamp: number;
   instanceId: number;
   activityHash: number;
+  uniquePlayerCount: number;
   players: {
     membershipType: number;
     membershipId: number;

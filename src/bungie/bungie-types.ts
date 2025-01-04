@@ -7,6 +7,7 @@ export interface BungieApiOptions extends RequestInit {
     group: string;
     key: string;
   };
+  throttled?: boolean;
 }
 
 export type BungieResponse<T> =
@@ -96,7 +97,28 @@ export const PGCR_SCHEMA = z.object({
 });
 export type PGCR = z.TypeOf<typeof PGCR_SCHEMA>;
 
-export interface ActivityHistory {}
+export interface ActivityHistory {
+  activities: {
+    activityDetails: {
+      referenceId: number;
+      directorActivityHash: number;
+      instanceId: string;
+      mode: number;
+      modes: number[];
+      isPrivate: boolean;
+      membershipType: number;
+    };
+    values: {
+      [key: string]: {
+        statId: string;
+        basic: {
+          value: number;
+          displayValue: string;
+        };
+      };
+    };
+  }[];
+}
 
 export interface UserProfile {
   profile: {
